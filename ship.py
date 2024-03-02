@@ -14,27 +14,31 @@ class Ship:
         self.rect = self.image.get_rect()
         self.rect.midbottom = self.screen_rect.midbottom
 
-        # movement flag for continuous movement
-        self.movingright = False
-        self.movingleft = False
-        self.movingup = False
-        self.movingdown = False
+        # store decimal value for the ships horizontal position
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+        # for continuous movement of the ship (movement flags)
+        self.moving_right = False
+        self.moving_left = False
+        self.moving_up = False
+        self.moving_down = False
+        self.speed = self.settings.ship_speed
+
     def update(self):
-        # to not let the rocket pass the visible screen
-        if self.movingright and self.rect.right < self.screen_rect.right:
-            self.x += self.settings.ship_speed
-
-        elif self.movingleft and self.rect.left > self.screen_rect.left:
-            self.x -= self.settings.ship_speed
-
-        elif self.movingup and self.screen_rect.top < self.rect.top:
-            self.y -= self.settings.ship_speed
-
-        elif self.movingdown and self.screen_rect.bottom > self.rect.bottom:
-            self.y += self.settings.ship_speed
+        """update the ship's position based on movement flags"""
+        # update ship's x value, not the rect
+        if self.moving_right and self.rect.right < self.screen_rect.right:
+            self.x += self.speed
+        elif self.moving_left and self.rect.left > self.screen_rect.left:
+            self.x -= self.speed
+        elif self.moving_up and self.rect.top > self.screen_rect.top:
+            self.y -= self.speed
+        elif self.moving_down and self.rect.bottom < self.screen_rect.bottom:
+            """self.rect.bottom is lower boundary of the game screen &
+            self.screen_rect.bottom is the position of the
+            lower end of the ship"""
+            self.y += self.speed
 
         self.rect.x = self.x
         self.rect.y = self.y
