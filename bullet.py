@@ -16,13 +16,13 @@ class Bullet(Sprite):
 
         self.y = float(self.rect.y)
 
-    def update_bullet(self):
+    def update(self):
         """move the bullet up the screen"""
+        # screen starts at 0,0 from top left
         self.y -= self.settings.bullet_speed
-
         # update the position of the bullet
         self.rect.y = self.y
 
     def draw_bullet(self):
         """draw the bullet"""
-        pygame.draw.rect(self.screen, self.settings.bullet_color, self.rect)
+        pygame.draw.rect(self.screen, self.color, self.rect)
