@@ -11,5 +11,10 @@ class Settings:
         # properties of bullet
         self.bullet_speed = 1.5
         self.bullet_color = (230, 0, 0)
-        self.bullet_width = 37
-        self.bullet_height = 64
+        self.bullet_width = 8
+        self.bullet_height = 18
+        self.bullets_allowed = 9
+
+        # self.alien_color = (0, 230, 0)
+        self.alien_width = 10
+        self.alien_height = 22

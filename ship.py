@@ -8,7 +8,7 @@ class Ship:
         self.settings = aigame.settings
 
         # self.image = pygame.image.load_basic('images/ship.bmp')
-        picture = pygame.image.load_basic('images/ship.bmp')
+        picture = pygame.image.load_basic('media/ship.bmp')
         self.image = pygame.transform.scale(
             picture, (75, 100))  # to scale the image
         self.rect = self.image.get_rect()
