@@ -1,10 +1,13 @@
 import sys
-
 import pygame
+
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from time import sleep
+from game_stats import GameStats
+from button import Button
 
 
 class AlienInvasion:
@@ -31,6 +34,9 @@ class AlienInvasion:
         self.bg_color = self.settings.bg_color
         pygame.display.set_caption("Alien Invasion")
 
+        self.stats = GameStats(self)
+        self.play_button = Button(self, "Play?")
+
         self.ship = Ship(self)
 
         """Grouping sprites"""
@@ -44,10 +50,11 @@ class AlienInvasion:
     def run_game(self):
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
+            if self.stats.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
-            self._update_aliens()
 
     """Creating fleets"""
 
@@ -87,16 +94,34 @@ class AlienInvasion:
 
         self.aliens.add(alien)
 
+    def _ship_hit(self):
+        """Response when the ship is hit by aliens"""
+        if self.stats.ships_left > 0:
+            self.stats.ships_left -= 1  # decrement by 1
+
+            self.aliens.empty()
+            self.bullets.empty()
+
+            self._create_fleet()
+            self.ship.center_ship()
+
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
+            pygame.mouse.set_visible(True)
+
     def _update_aliens(self):
         """Updating the position of the aliens in fleet"""
         self._check_fleet_edges()
         self.aliens.update()
 
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+
     def _check_fleet_edges(self):
         """Checking if the fleet reaches the screen edges"""
         for alien in self.aliens.sprites():
             if alien.check_edges():
-                print("checking passed")
                 self._change_fleet_direction()
                 break
 
@@ -117,24 +142,56 @@ class AlienInvasion:
                 self.bullets.remove(bullet)
             print(f"Bullets remaining: {len(self.bullets)}")
 
+        self._check_bullet_alien_collision()
+
+    """ checking for collision of the alien the bullet"""
+
+    def _check_bullet_alien_collision(self):
+
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
 
-        if not self.aliens:  # if all aliens are destoryed, remove all bullets and create new fleets
+        # if all aliens are destoryed, remove all bullets and create new fleets
+        if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+
+    """Check if the alien ships have reached the bottom of the screen"""
+
+    def _check_alien_bottom(self):
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                self._ship_hit()
+                break
 
     """Updating screen"""
 
     def _update_screen(self):
         """update screen"""
+
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
 
+        if not self.stats.game_active:
+            self.play_button.draw_button()
+
         pygame.display.flip()
+
+    def _check_play_button(self, mouse_pos):
+        button_clicked = self.play_button.rect.collidepoint(*mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            self.stats.game_active = True
+            self.stats.reset_stats()
+            self.aliens.empty()
+            self.bullets.empty()
+
+            self._create_fleet()
+            self.ship.center_ship()
+            pygame.mouse.set_visible(False)
 
     """Firing bullets"""
 
@@ -155,6 +212,9 @@ class AlienInvasion:
                 self._check_down_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_up_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
     def _check_down_events(self, event):
         if event.key == pygame.K_q:
