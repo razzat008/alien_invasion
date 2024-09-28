@@ -11,13 +11,6 @@ from button import Button
 
 
 class AlienInvasion:
-    """For movement"""
-    movement_keys = {
-        (pygame.K_RIGHT, pygame.K_l): "moving_right",
-        (pygame.K_LEFT, pygame.K_h): "moving_left",
-        (pygame.K_UP, pygame.K_k): "moving_up",
-        (pygame.K_DOWN, pygame.K_j): "moving_down",
-    }
 
     """All initializations"""
 
@@ -140,7 +133,7 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-            print(f"Bullets remaining: {len(self.bullets)}")
+            # print(f"Bullets remaining: {len(self.bullets)}")
 
         self._check_bullet_alien_collision()
 
@@ -200,6 +193,14 @@ class AlienInvasion:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+
+    """For movement"""
+    movement_keys = {
+        (pygame.K_RIGHT, pygame.K_l): "moving_right",
+        (pygame.K_LEFT, pygame.K_h): "moving_left",
+        (pygame.K_UP, pygame.K_k): "moving_up",
+        (pygame.K_DOWN, pygame.K_j): "moving_down",
+    }
 
     """Check for keypresses"""
 
