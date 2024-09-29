@@ -2,6 +2,10 @@
 ```bash
 python -m venv your_virtual_environment
 ```
+cd into the environment
+```bash
+cd your_virtual_environment
+```
 activate the environment:
 ```bash
 source bin/activate
@@ -16,3 +20,6 @@ git clone https://github.com/razzat008/alien_invasion
 pip install -r requirements.txt
 ```
 
+## Things left to do
+- [ ]  Add background music
+- [ ]  Add scoring features
